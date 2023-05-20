@@ -328,3 +328,90 @@ def minimax(board, depth, is_maximizing):
                 best_score = min(score, best_score)
     
         return best_score
+# Options
+options = ["MinMax easy", "MinMax hard", "Alpha_Beta easy", "Alpha_Beta hard"]
+selected_option = None
+show_buttons = True
+
+# Font
+font = pygame.font.SysFont(None, 24)
+clock = pygame.time.Clock()
+
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if show_buttons:
+                if event.key == pygame.K_1:
+                    selected_option = 0
+                    show_buttons = False
+                elif event.key == pygame.K_2:
+                    selected_option = 1
+                    show_buttons = False
+                elif event.key == pygame.K_3:
+                    selected_option = 2
+                    show_buttons = False
+                elif event.key == pygame.K_4:
+                    selected_option = 3
+                    show_buttons = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if show_buttons:
+                mouse_pos = pygame.mouse.get_pos()
+                for i, option in enumerate(options):
+                    rect = pygame.Rect(
+                        (WIDTH - 200) // 2,
+                        (HEIGHT - len(options) * 60) // 2 + i * 60,
+                        200,
+                        50
+                    )
+                    if rect.collidepoint(mouse_pos):
+                        selected_option = i
+                        show_buttons = False
+
+    if show_buttons:
+        window.blit(background_image, (0, 0))
+        for i, option in enumerate(options):
+            rect = pygame.Rect(
+                (WIDTH - 200) // 2,
+                (HEIGHT - len(options) * 60) // 2 + i * 60,
+                200,
+                50
+            )
+            color = WHITE #if i == selected_option else GRAY
+            pygame.draw.rect(window, color, rect)
+            text_surface = font.render(option, True, BG_COLOR)
+            text_rect = text_surface.get_rect(center=rect.center)
+            window.blit(text_surface, text_rect)
+    else:
+        # Perform action based on selected option
+        if selected_option is not None:
+            start_time = pygame.time.get_ticks() 
+            draw_board()
+            handle_events(selected_option)
+            time.sleep(1)
+            draw_board()
+            game.print()
+            
+    
+    if game.winner:
+        font = pygame.font.Font(None, 70)
+        text = font.render(f"Player {game.winner} wins!", True, (255, 255, 255))
+        window.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
+        event.type == pygame.QUIT
+        elapsed_time = (pygame.time.get_ticks() - start_time) / 1000.0
+        print("Elapsed time:", elapsed_time)
+        
+
+
+
+    elif game.is_board_full():
+        font = pygame.font.Font(None, 70)
+        text = font.render("It's a draw!", True, (255, 255, 255))
+        window.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
+        
+        
+    pygame.display.update()
+    clock.tick(20)
