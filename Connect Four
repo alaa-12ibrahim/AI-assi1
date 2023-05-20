@@ -1,0 +1,136 @@
+import pygame
+import sys
+from pygame.locals import *
+import random
+import time
+
+
+# Constants
+WIDTH = 580
+HEIGHT = 640
+CELL_SIZE = 80
+COLUMN_COUNT = 7
+ROW_COUNT = 6
+BG_COLOR = 	(9,24,51)
+BUTTON=(231,6,138)
+PLAYER_COLORS = [(10,189,198),	(231,6,138)]
+WINDOW_SIZE = (WIDTH, HEIGHT)
+CELL_SIZE_HALF = CELL_SIZE // 2
+BOARD_WIDTH = CELL_SIZE * COLUMN_COUNT
+BOARD_HEIGHT = CELL_SIZE * ROW_COUNT
+BOARD_OFFSET_X = (WIDTH - BOARD_WIDTH) // 2
+BOARD_OFFSET_Y = (HEIGHT - BOARD_HEIGHT) // 2
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GRAY = (128, 128, 128)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+
+# Initialize Pygame
+pygame.init()
+window = pygame.display.set_mode(WINDOW_SIZE)
+pygame.display.set_caption("Connect Four")
+background_image = pygame.image.load("background.png")
+background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+start = pygame.image.load("background.png")
+start = pygame.transform.scale(start, (WIDTH, HEIGHT))
+
+clock = pygame.time.Clock()
+
+
+
+# Connect Four game class
+class ConnectFour:
+    def __init__(self):
+        self.board = [[' ' for _ in range(COLUMN_COUNT)] for _ in range(ROW_COUNT)]
+        self.current_player = 'X'
+        self.winner = None
+
+    def make_move(self, column):
+        if self.winner or self.board[0][column] != ' ':
+            return False
+
+        for row in range(ROW_COUNT - 1, -1, -1):
+            if self.board[row][column] == ' ':
+                self.board[row][column] = self.current_player
+                self.check_winner(row, column)
+                self.current_player = 'O' if self.current_player == 'X' else 'X'
+                return True
+        return False
+    
+
+    def get_next_open_row(self, column):
+        for row in range(ROW_COUNT - 1, -1, -1):
+            if self.board[row][column] == ' ':
+                return row
+        return -1  # Column is full, no available row
+
+
+    def check_winner(self, row, col):
+        player = self.board[row][col]
+
+        # Check horizontal
+        for row in range(6):
+            for col in range(4):
+                if (self.board[row][col] ==player and
+                        self.board[row][col] == self.board[row][col + 1] == self.board[row][col + 2] == self.board[row][
+                            col + 3]
+
+                ):
+                    self.winner= player
+                    return True
+
+        # Check vertical
+        for col in range(7):
+            for row in range(3):
+                if (self.board[row][col] ==player and
+                        self.board[row][col] == self.board[row + 1][col] == self.board[row + 2][col] ==
+                        self.board[row + 3][col]):
+                    self.winner = player
+                    return True
+
+        # Check diagonal (top-left to bottom-right)
+        for row in range(3):
+            for col in range(4):
+                if (self.board[row][col] ==player and
+                        self.board[row][col] == self.board[row + 1][col + 1] == self.board[row + 2][col + 2] ==
+                        self.board[row + 3][col + 3]):
+                    self.winner=player
+                    
+                    return True
+
+        # Check diagonal (top-right to bottom-left)
+        for row in range(3):
+            for col in range(3, 7):
+                if (self.board[row][col] == player and
+                        self.board[row][col] == self.board[row + 1][col - 1] == self.board[row + 2][col - 2] ==
+                        self.board[row + 3][col - 3]):
+                    self.winner=player
+                    return True
+        return False
+
+    def is_board_full(self):
+        for row in self.board:
+            if ' ' in row:
+                return False
+        return True
+
+    def reset(self):
+        self.board = [[' ' for _ in range(COLUMN_COUNT)] for _ in range(ROW_COUNT)]
+        self.current_player = 'X'
+        self.winner = None
+
+    def print_(self):
+        for row in self.board:
+            print('|'.join(row))
+        print('---------------')
+        print('1 2 3 4 5 6 7')
+
+    def print(self):
+        #print("Welcome to Connect Four!")
+        print("Player 1: X | Player 2: O")
+        print("-------------------------")
+        self.print_()
+        if self.winner is not None:
+            print("The winner is")
+            print(self.winner)
