@@ -134,3 +134,73 @@ class ConnectFour:
         if self.winner is not None:
             print("The winner is")
             print(self.winner)
+            
+           
+# Create the Connect Four game instance
+game = ConnectFour()
+
+# Function to draw the Connect Four board
+def draw_board():
+    window.blit(background_image, (0, 0))
+    
+    rectangle_color = 	(9,24,51)
+    #pygame.draw.rect(window, rectangle_color, (BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_WIDTH, BOARD_HEIGHT))
+            #draw cells
+    for row in range(ROW_COUNT):
+        for col in range(COLUMN_COUNT):
+            #pygame.draw.circle(window, BG_COLOR, (BOARD_OFFSET_X + col * CELL_SIZE + CELL_SIZE // 2, BOARD_OFFSET_Y + row * CELL_SIZE + CELL_SIZE // 2), CELL_SIZE // 2 - 5)
+            pygame.draw.circle(window, BG_COLOR, (BOARD_OFFSET_X + col * CELL_SIZE + CELL_SIZE // 2, HEIGHT - (BOARD_OFFSET_Y + (ROW_COUNT - row - 1) * CELL_SIZE + CELL_SIZE // 2)), CELL_SIZE // 2 - 5)
+
+            if game.board[row][col] == 'X':
+                pygame.draw.circle(window, PLAYER_COLORS[0], (BOARD_OFFSET_X + col * CELL_SIZE + CELL_SIZE // 2, BOARD_OFFSET_Y + row * CELL_SIZE + CELL_SIZE // 2), CELL_SIZE // 2 - 5)
+            elif game.board[row][col] == 'O':
+                pygame.draw.circle(window, PLAYER_COLORS[1], (BOARD_OFFSET_X + col * CELL_SIZE + CELL_SIZE // 2, BOARD_OFFSET_Y + row * CELL_SIZE + CELL_SIZE // 2), CELL_SIZE // 2 - 5)
+
+# Function to handle events
+
+def handle_events(t):
+
+
+    draw_board()
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+    if t==0:
+            
+        if not game.winner:
+            computer_move()
+            draw_board()
+            time.sleep(1)
+            AI_minimax(4)
+            draw_board()
+    elif t==1:
+        if not game.winner:
+            computer_move()
+            draw_board()
+            time.sleep(1)
+            AI_minimax(8)
+            draw_board()
+    elif t==2:
+        if not game.winner:
+            computer_move()
+            draw_board()
+            time.sleep(1)
+            AI_alpha(4)
+            draw_board()
+    elif t==3:
+        if not game.winner:
+            computer_move()
+            draw_board()
+            time.sleep(1)
+            AI_alpha(8)
+            draw_board()
+                    
+
+
+def computer_move():
+    if not game.winner:
+        available_columns = [col for col in range(COLUMN_COUNT) if game.board[0][col] == ' ']
+        if available_columns:
+            column = random.choice(available_columns)
+            game.make_move(column)
